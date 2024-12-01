@@ -101,13 +101,6 @@
         
     }
       const usedRemotes = [
-                {
-                  entryGlobalName: "board",
-                  name: "board",
-                  type: "module",
-                  entry: "http://localhost:5001/remoteEntry.js",
-                }
-          
       ]
       export {
         usedShared,

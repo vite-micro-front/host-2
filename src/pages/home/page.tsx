@@ -1,18 +1,46 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
+import {
+  BoardAddedEvent,
+  BoardDeletedEvent,
+} from "@vite-micro-front/contracts/events";
 
-type Board = {
-  id: string;
-  title: string;
-};
+import { Board, BoardId } from "@vite-micro-front/contracts/kernel";
+import { useDispatch, useSelector } from "react-redux";
+import { createSlice } from "@reduxjs/toolkit";
+import { rootReducer } from "../../store/store";
+
+const boardsSlice = createSlice({
+  name: "host/board",
+  reducers: {},
+  initialState: {
+    list: [] as Board[],
+  },
+  selectors: {
+    getBoards: (state) => {
+      return state.list;
+    },
+  },
+
+  extraReducers: (builder) => {
+    builder.addCase(
+      "board/deleted/v1" satisfies BoardDeletedEvent["type"],
+      (state, action: BoardDeletedEvent) => {
+        state.list.filter((board) => board.id !== action.payload.boardId);
+      }
+    );
+    builder.addCase(
+      "board/added/v1" satisfies BoardAddedEvent["type"],
+      (state, action: BoardAddedEvent) => {
+        state.list.push(action.payload);
+      }
+    );
+  },
+}).injectInto(rootReducer);
 
 export function HomePage() {
-  const [boards, setBoards] = useState<Board[]>([
-    {
-      id: "1",
-      title: "Board 1",
-    },
-  ]);
+  const boards = useSelector(boardsSlice.selectors.getBoards);
+  const dispatch = useDispatch();
+
   return (
     <div>
       <h1>Home</h1>
@@ -21,7 +49,13 @@ export function HomePage() {
           e.preventDefault();
           const formData = new FormData(e.currentTarget);
           const title = formData.get("title") as string;
-          setBoards([...boards, { id: crypto.randomUUID(), title }]);
+          dispatch({
+            type: "board/added/v1",
+            payload: {
+              title,
+              id: crypto.randomUUID() as BoardId,
+            },
+          } satisfies BoardAddedEvent);
         }}
       >
         <input name="title" type="text" />
