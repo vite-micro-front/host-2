@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Link } from "react-router-dom";
 import { App } from "./app";
 
 export const router = createBrowserRouter([
@@ -6,7 +6,12 @@ export const router = createBrowserRouter([
     path: "/",
     element: <App />,
     loader: async () => {
-      await import("board/eager" as any);
+      try {
+        await import("board/eager" as any).catch();
+      } catch (e) {
+        return {};
+      }
+
       return {};
     },
     children: [
@@ -15,8 +20,20 @@ export const router = createBrowserRouter([
         lazy: async () => await import("../pages/home"),
       },
       {
-        path: "boards/:id",
-        lazy: async () => await import("board/page" as any),
+        ErrorBoundary() {
+          return (
+            <div>
+              <h1>Service board грустит</h1>
+              <Link to="/">Home</Link>
+            </div>
+          );
+        },
+        children: [
+          {
+            path: "boards/:id",
+            lazy: async () => await import("board/page" as any),
+          },
+        ],
       },
     ],
   },
