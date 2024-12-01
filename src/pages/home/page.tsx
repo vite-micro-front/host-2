@@ -25,7 +25,9 @@ const boardsSlice = createSlice({
     builder.addCase(
       "board/deleted/v1" satisfies BoardDeletedEvent["type"],
       (state, action: BoardDeletedEvent) => {
-        state.list.filter((board) => board.id !== action.payload.boardId);
+        state.list = state.list.filter(
+          (board) => board.id !== action.payload.boardId
+        );
       }
     );
     builder.addCase(
