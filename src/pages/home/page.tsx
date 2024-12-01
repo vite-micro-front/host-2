@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 type Board = {
   id: string;
@@ -6,7 +7,12 @@ type Board = {
 };
 
 export function HomePage() {
-  const [boards, setBoards] = useState<Board[]>([]);
+  const [boards, setBoards] = useState<Board[]>([
+    {
+      id: "1",
+      title: "Board 1",
+    },
+  ]);
   return (
     <div>
       <h1>Home</h1>
@@ -24,7 +30,9 @@ export function HomePage() {
 
       <div>
         {boards.map((board) => (
-          <div key={board.id}>{board.title}</div>
+          <Link to={`/boards/${board.id}`} key={board.id}>
+            {board.title}
+          </Link>
         ))}
       </div>
     </div>
