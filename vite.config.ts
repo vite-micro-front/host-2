@@ -12,7 +12,8 @@ export default defineConfig({
         board: {
           type: "module",
           name: "board",
-          entry: "http://localhost:5001/remoteEntry.js",
+          entry:
+            process.env.BOARD_URL ?? "http://localhost:5001/remoteEntry.js",
         },
       },
       filename: "remoteEntry.js",
@@ -32,4 +33,7 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    target: "chrome89",
+  },
 });
